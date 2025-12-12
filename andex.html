@@ -105,6 +105,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // دالة البحث
+<script>
 function searchPhone() {
     let number = document.getElementById("phone").value.trim();
     let resultBox = document.getElementById("result");
@@ -116,7 +117,7 @@ function searchPhone() {
         return;
     }
 
-    firebase.database().ref("phones/" + number).once("value", function(snapshot) {
+    firebase.database().ref("phones/" + number).once("value").then(function(snapshot) {
         if (snapshot.exists()) {
 
             let data = snapshot.val();
@@ -128,9 +129,7 @@ function searchPhone() {
             let notes = data.notes || "لا توجد ملاحظات";
             let lat = data.lat;
             let lng = data.lng;
-            let image = data.image;
 
-            // المعلومات
             resultBox.innerHTML =
                 "<strong>👤 الاسم:</strong> " + name + "<br>" +
                 "<strong>📍 العنوان:</strong> " + address + "<br>" +
@@ -138,15 +137,34 @@ function searchPhone() {
                 "<strong>🏢 الشركة:</strong> " + company + "<br>" +
                 "<strong>📝 ملاحظات:</strong> " + notes;
 
-            // الصورة
-            if (image) {
-                img.src = image;
+            if (data.image) {
+                img.src = data.image;
                 img.style.display = "block";
             } else {
                 img.style.display = "none";
             }
 
-            // الخريطة
+            if (lat && lng) {
+                mapFrame.style.display = "block";
+                mapFrame.src =
+                    "https://www.google.com/maps?q=" + lat + "," + lng + "&z=15&output=embed";
+            } else {
+                mapFrame.style.display = "none";
+            }
+
+        } else {
+            resultBox.innerHTML = "❌ لا توجد بيانات لهذا الرقم";
+            img.style.display = "none";
+            mapFrame.style.display = "none";
+        }
+    });
+}
+</script>
+
+            } else {
+                img.style.display = "none";
+            }
+
             if (lat && lng) {
                 mapFrame.style.display = "block";
                 mapFrame.src =
