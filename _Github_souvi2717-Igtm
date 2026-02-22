@@ -1,6 +1,0 @@
-git init
-git add .
-git commit -m "Initial commit — site for app WebView"
-git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/souvi2718-lgtm.github.io.git
-git push -u origin main
