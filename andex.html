@@ -1,174 +1,111 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>البحث عن رقم الهاتف</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حساب التجارة</title>
 
 <style>
-body {
-    font-family: "Cairo", sans-serif;
-    background: #eef2f7;
-    padding: 20px;
+body{
+    font-family: Arial;
+    direction: rtl;
     text-align: center;
+    background: #f2f2f2;
 }
-
-.box {
+.container{
     background: white;
     padding: 20px;
-    max-width: 480px;
-    margin: auto;
-    border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-input, button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 12px;
+    margin: 20px;
     border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 18px;
+    box-shadow: 0 0 10px #ccc;
 }
-
-button {
-    background: #007bff;
+input{
+    padding: 10px;
+    margin: 5px;
+    width: 80%;
+}
+button{
+    padding: 10px 20px;
+    background: green;
     color: white;
     border: none;
-    cursor: pointer;
+    border-radius: 5px;
 }
-
-button:hover {
-    background: #0056b3;
-}
-
-#result {
-    margin-top: 20px;
-    text-align: right;
-    font-size: 18px;
-    line-height: 1.8;
-}
-
-.profile-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 12px;
-    object-fit: cover;
-    margin-top: 10px;
-    display: none;
-}
-
-.map {
+table{
     width: 100%;
-    height: 300px;
     margin-top: 15px;
-    border-radius: 12px;
-    display: none;
+    border-collapse: collapse;
+}
+th, td{
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+.total{
+    font-size: 20px;
+    margin-top: 15px;
+    color: red;
 }
 </style>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 </head>
+
 <body>
 
-<div class="box">
-    <h2>🔍 البحث عن رقم الهاتف</h2>
+<div class="container">
+<h2>تطبيق حساب التجارة</h2>
 
-    <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
-    <button onclick="searchPhone()">بحث</button>
+<input type="text" id="name" placeholder="اسم المنتج"><br>
+<input type="number" id="price" placeholder="سعر الفرد"><br>
+<input type="number" id="quantity" placeholder="الكمية"><br>
 
-    <img id="profileImage" class="profile-img">
+<button onclick="addItem()">إضافة</button>
 
-    <div id="result"></div>
+<table>
+<thead>
+<tr>
+<th>المنتج</th>
+<th>سعر الفرد</th>
+<th>الكمية</th>
+<th>الثمن الإجمالي</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
 
-    <iframe id="mapFrame" class="map"></iframe>
+<div class="total">
+المجموع النهائي: <span id="finalTotal">0</span>
+</div>
+
 </div>
 
 <script>
-// إعداد Firebase
-const firebaseConfig = {
-  };
+let finalTotal = 0;
 
-firebase.initializeApp(firebaseConfig);
-db = firebase.database();
+function addItem(){
+    let name = document.getElementById("name").value;
+    let price = parseFloat(document.getElementById("price").value);
+    let quantity = parseFloat(document.getElementById("quantity").value);
 
-// دالة البحث
-<script>
-function searchPhone() {
-    let number = document.getElementById("phone").value.trim();
-    let resultBox = document.getElementById("result");
-    let mapFrame = document.getElementById("mapFrame");
-    let img = document.getElementById("profileImage");
-
-    if (number === "") {
-        resultBox.innerHTML = "❗ الرجاء إدخال رقم الهاتف";
+    if(name == "" || isNaN(price) || isNaN(quantity)){
+        alert("يرجى ملء جميع الخانات");
         return;
     }
 
-    firebase.database().ref("phones/" + number).once("value").then(function(snapshot) {
-        if (snapshot.exists()) {
+    let total = price * quantity;
+    finalTotal += total;
 
-            let data = snapshot.val();
+    let table = document.getElementById("tableBody");
+    let row = table.insertRow();
 
-            let name = data.name || "غير معروف";
-            let address = data.address || "غير متوفر";
-            let city = data.city || "غير متوفر";
-            let company = data.company || "غير متوفر";
-            let notes = data.notes || "لا توجد ملاحظات";
-            let lat = data.lat;
-            let lng = data.lng;
+    row.insertCell(0).innerHTML = name;
+    row.insertCell(1).innerHTML = price;
+    row.insertCell(2).innerHTML = quantity;
+    row.insertCell(3).innerHTML = total;
 
-            resultBox.innerHTML =
-                "<strong>👤 الاسم:</strong> " + name + "<br>" +
-                "<strong>📍 العنوان:</strong> " + address + "<br>" +
-                "<strong>🏙 المدينة:</strong> " + city + "<br>" +
-                "<strong>🏢 الشركة:</strong> " + company + "<br>" +
-                "<strong>📝 ملاحظات:</strong> " + notes;
+    document.getElementById("finalTotal").innerHTML = finalTotal;
 
-            if (data.image) {
-                img.src = data.image;
-                img.style.display = "block";
-            } else {
-                img.style.display = "none";
-            }
-
-            if (lat && lng) {
-                mapFrame.style.display = "block";
-                mapFrame.src =
-                    "https://www.google.com/maps?q=" + lat + "," + lng + "&z=15&output=embed";
-            } else {
-                mapFrame.style.display = "none";
-            }
-
-        } else {
-            resultBox.innerHTML = "❌ لا توجد بيانات لهذا الرقم";
-            img.style.display = "none";
-            mapFrame.style.display = "none";
-        }
-    });
-}
-</script>
-
-            } else {
-                img.style.display = "none";
-            }
-
-            if (lat && lng) {
-                mapFrame.style.display = "block";
-                mapFrame.src =
-                    "https://www.google.com/maps?q=" + lat + "," + lng + "&z=15&output=embed";
-            } else {
-                mapFrame.style.display = "none";
-            }
-
-        } else {
-            resultBox.innerHTML = "❌ لا توجد بيانات لهذا الرقم";
-            img.style.display = "none";
-            mapFrame.style.display = "none";
-        }
-    });
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("quantity").value = "";
 }
 </script>
 
