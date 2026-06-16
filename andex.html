@@ -1,113 +1,134 @@
+```html
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حساب التجارة</title>
+<title>لائحة متابعة الطلاب</title>
 
 <style>
 body{
-    font-family: Arial;
-    direction: rtl;
-    text-align: center;
-    background: #f2f2f2;
+    font-family:Tahoma,Arial,sans-serif;
+    background:#f4f4f4;
+    margin:15px;
 }
-.container{
-    background: white;
-    padding: 20px;
-    margin: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px #ccc;
-}
-input{
-    padding: 10px;
-    margin: 5px;
-    width: 80%;
+h2{
+    text-align:center;
+    color:#0d47a1;
 }
 button{
-    padding: 10px 20px;
-    background: green;
-    color: white;
-    border: none;
-    border-radius: 5px;
+    padding:10px 15px;
+    margin:5px;
+    border:none;
+    background:#1976d2;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+button:hover{
+    background:#125ea7;
 }
 table{
-    width: 100%;
-    margin-top: 15px;
-    border-collapse: collapse;
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
 }
-th, td{
-    border: 1px solid #ccc;
-    padding: 8px;
+th,td{
+    border:1px solid #ccc;
+    padding:8px;
+    text-align:center;
 }
-.total{
-    font-size: 20px;
-    margin-top: 15px;
-    color: red;
+th{
+    background:#1976d2;
+    color:#fff;
+}
+input{
+    width:95%;
+    padding:5px;
+    text-align:center;
+    box-sizing:border-box;
+}
+#total{
+    margin-top:15px;
+    font-size:20px;
+    font-weight:bold;
+    color:green;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-<h2>تطبيق حساب التجارة</h2>
+<h2>لائحة متابعة الطلاب</h2>
 
-<input type="text" id="name" placeholder="اسم المنتج"><br>
-<input type="number" id="price" placeholder="سعر الفرد"><br>
-<input type="number" id="quantity" placeholder="الكمية"><br>
-
-<button onclick="addItem()">إضافة</button>
+<button onclick="addRow()">إضافة طالب</button>
 
 <table>
 <thead>
 <tr>
-<th>المنتج</th>
-<th>سعر الفرد</th>
-<th>الكمية</th>
-<th>الثمن الإجمالي</th>
+<th>م</th>
+<th>اسم الطالب</th>
+<th>الأيام</th>
+<th>عدد الأحزاب</th>
+<th>أبيات الأخضري</th>
+<th>أبيات عبيد ربه</th>
+<th>الأحاديث</th>
+<th>الأذكار</th>
 </tr>
 </thead>
-<tbody id="tableBody"></tbody>
+
+<tbody id="tableBody">
+</tbody>
+
 </table>
 
-<div class="total">
-المجموع النهائي: <span id="finalTotal">0</span>
-</div>
-
-</div>
+<div id="total">مجموع عدد الأحزاب: 0</div>
 
 <script>
-let finalTotal = 0;
 
-function addItem(){
-    let name = document.getElementById("name").value;
-    let price = parseFloat(document.getElementById("price").value);
-    let quantity = parseFloat(document.getElementById("quantity").value);
+function addRow() {
 
-    if(name == "" || isNaN(price) || isNaN(quantity)){
-        alert("يرجى ملء جميع الخانات");
-        return;
-    }
+    const tbody = document.getElementById("tableBody");
+    const num = tbody.rows.length + 1;
 
-    let total = price * quantity;
-    finalTotal += total;
+    const row = document.createElement("tr");
 
-    let table = document.getElementById("tableBody");
-    let row = table.insertRow();
+    row.innerHTML = `
+        <td>${num}</td>
+        <td><input type="text" placeholder="اسم الطالب"></td>
+        <td><input type="number" min="0"></td>
+        <td>
+            <input type="number"
+                   min="0"
+                   value="0"
+                   class="ahzab"
+                   oninput="calculateTotal()">
+        </td>
+        <td><input type="number" min="0"></td>
+        <td><input type="number" min="0"></td>
+        <td><input type="number" min="0"></td>
+        <td><input type="number" min="0"></td>
+    `;
 
-    row.insertCell(0).innerHTML = name;
-    row.insertCell(1).innerHTML = price;
-    row.insertCell(2).innerHTML = quantity;
-    row.insertCell(3).innerHTML = total;
-
-    document.getElementById("finalTotal").innerHTML = finalTotal;
-
-    document.getElementById("name").value = "";
-    document.getElementById("price").value = "";
-    document.getElementById("quantity").value = "";
+    tbody.appendChild(row);
 }
+
+function calculateTotal() {
+
+    let total = 0;
+
+    document.querySelectorAll(".ahzab").forEach(function(item) {
+        total += parseInt(item.value) || 0;
+    });
+
+    document.getElementById("total").innerText =
+        "مجموع عدد الأحزاب: " + total;
+}
+
+addRow();
+
 </script>
 
 </body>
 </html>
+```
